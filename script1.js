@@ -1,63 +1,69 @@
-console.log("Hello World!");
+// This will store the user's answers
+const userAnswers = {};
 
-let favoriteFoods = ["Ramen", "Sushi", "Tacos", "Pizza", "Pasta", "Ice Cream"];
+// Select all question blocks
+const questionBlocks = document.querySelectorAll(".question-block");
 
-for (let i = 0; i < favoriteFoods.length; i++) {
-    console.log("One of my favorite foods is " + favoriteFoods[i] + ".");
-}
+// Handle clicking answer buttons
+questionBlocks.forEach((block, index) => {
+    const buttons = block.querySelectorAll(".answer-btn");
 
-for (let i = 0; i < favoriteFoods.length; i++) {
-    console.log("My #" + (i + 1) + " favorite food is " + favoriteFoods[i]);
-}
+    buttons.forEach(button => {
+        button.addEventListener("click", () => {
+            // Remove highlight from all buttons in this question
+            buttons.forEach(btn => btn.classList.remove("selected"));
 
-function printFoodRecommendation(foodName) {
-    console.log("Have you ever tried " + foodName + "?");
-    console.log("I always recommend " + foodName + " to friends.");
-    console.log("Trust me — " + foodName + " is delicious.");
-}
+            // Highlight the clicked button
+            button.classList.add("selected");
 
-printFoodRecommendation("Ramen");
-printFoodRecommendation("Sushi");
-printFoodRecommendation("Tacos");
+            // Save the answer
+            const questionId = `q${index + 1}`;
+            userAnswers[questionId] = button.dataset.answer;
 
-let friendFavorites = [
-    "Pizza", "Sushi", "Pasta", "Falafel", "Burgers", "Ramen", "Pad Thai", "Curry", "Pho", "Nachos",
-    "Gnocchi", "Donuts", "Steak", "Lasagna", "Biryani", "Tacos", "Croissant", "Churros", "Fried Rice", "Shawarma",
-    "Miso Soup", "BBQ Ribs", "Hotpot", "Enchiladas", "Baklava", "Gyros", "Hummus", "Empanadas", "Pancakes", "Muffins",
-    "Samosas", "Macarons", "Quiche", "Pierogi", "Arepas", "Okonomiyaki", "Ceviche", "Brisket", "Bao Buns", "Poutine",
-    "Clam Chowder", "Fajitas", "Canelé", "Kimchi", "Tamales", "Omelette", "Biscuits", "Tempura", "Spring Rolls", "Crepes"
-];
+            console.log(userAnswers); // shows clicks are working
+        });
+    });
+});
 
-let foodsWithA = [];
-for (let i = 0; i < friendFavorites.length; i++) {
-    if (friendFavorites[i].toLowerCase().includes("a")) {
-        foodsWithA.push(friendFavorites[i]);
+
+// Result button 
+document.getElementById("show-result").addEventListener("click", () => {
+    console.log("Result button clicked"); // ✅ FIXED
+
+    let score = { A: 0, B: 0, C: 0, D: 0 };
+
+    // Count answers
+    Object.values(userAnswers).forEach(ans => {
+        if (score[ans] !== undefined) {   // ✅ ADDED safety check
+            score[ans]++;
+        }
+    });
+
+    // Find highest score
+    let maxAnswer = "A";
+    for (let key in score) {
+        if (score[key] > score[maxAnswer]) {
+            maxAnswer = key;
+        }
     }
-}
-console.log(foodsWithA);
 
-let longFoodNames = [];
-let shortFoodNames = [];
-for (let i = 0; i < friendFavorites.length; i++) {
-    if (friendFavorites[i].length > 6) {
-        longFoodNames.push(friendFavorites[i]);
-    } else {
-        shortFoodNames.push(friendFavorites[i]);
+    // Decide result
+    let resultText = "";
+
+    if (maxAnswer === "A") {
+        resultText = "You're like The Weeknd (chill, mysterious, smooth)";
+    } 
+    else if (maxAnswer === "B") {
+        resultText = "You're like Drake (confident, energetic, popular)";
+    } 
+    else if (maxAnswer === "C") {
+        resultText = "You're like Doja Cat (creative, bold, fun)";
+    } 
+    else {
+        resultText = "You're like Post Malone (laid-back, unique, vibey)";
     }
-}
-console.log(longFoodNames);
-console.log(shortFoodNames);
 
-if (longFoodNames.length > shortFoodNames.length) {
-    console.log("There are more long-named foods.");
-} else {
-    console.log("There are more short-named foods.");
-}
-
-let longestFood = "";
-for (let i = 0; i < friendFavorites.length; i++) {
-    if (friendFavorites[i].length > longestFood.length) {
-        longestFood = friendFavorites[i];
-    }
-}
-console.log("The longest food name in the list is " + longestFood + " with " + longestFood.length + " characters.");
+    // Show result on screen
+    document.getElementById("result-container").style.display = "block";
+    document.getElementById("result-text").textContent = resultText;
+});
